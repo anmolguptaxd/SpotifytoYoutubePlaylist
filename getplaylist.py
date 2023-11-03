@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, session, url_for
+from flask import Flask, request, redirect, session, url_for, render_template
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
@@ -22,17 +22,15 @@ app.config['SCOPE'] = 'playlist-read-private'
 
 # Helper function to get the current cache path
 def session_cache_path():
-    return '.spotify_caches/' + session.get('uuid', '')
+    cache_directory = '.spotify_caches'
+    if not os.path.isdir(cache_directory):
+        os.makedirs(cache_directory)
+    return os.path.join(cache_directory, session.get('uuid', ''))
 
 @app.route('/')
 def index():
-    # Step 1. Have the user sign in with Spotify and authorize your app
-    if not session.get('uuid'):
-        # Step 2. User is not logged in, generate a random session UUID
-        session['uuid'] = str(uuid.uuid4())
-
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
-    auth_manager = spotipy.oauth2.SpotifyOAuth(
+    auth_manager = SpotifyOAuth(
         client_id=app.config['SPOTIPY_CLIENT_ID'],
         client_secret=app.config['SPOTIPY_CLIENT_SECRET'],
         redirect_uri=app.config['SPOTIPY_REDIRECT_URI'],
@@ -40,23 +38,45 @@ def index():
         cache_handler=cache_handler,
         show_dialog=True
     )
-    
-    if request.args.get("code"):
-        # Step 3. Being redirected from Spotify auth page
-        auth_manager.get_access_token(request.args.get("code"))
-        return redirect(url_for('index'))
+
+    if not session.get('uuid'):
+        # Step 2. User is not logged in, generate a random session UUID
+        session['uuid'] = str(uuid.uuid4())
 
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         # Step 4. Display sign in link when no token
         auth_url = auth_manager.get_authorize_url()
-        return f'<h2><a href="{auth_url}">Sign in with Spotify</a></h2>'
+        return render_template('index.html', auth_url=auth_url)
 
     # Step 5. Signed in, display playlists
     spotify = spotipy.Spotify(auth_manager=auth_manager)
     return export_playlists(spotify)
 
-# The rest of your Flask app code remains unchanged...
+@app.route('/callback')
+def callback():
+    # Step 6. Being redirected from Spotify auth page with the code
+    cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
+    auth_manager = SpotifyOAuth(
+        client_id=app.config['SPOTIPY_CLIENT_ID'],
+        client_secret=app.config['SPOTIPY_CLIENT_SECRET'],
+        redirect_uri=app.config['SPOTIPY_REDIRECT_URI'],
+        scope=app.config['SCOPE'],
+        cache_handler=cache_handler,
+        show_dialog=True
+    )
+    # Exchange code for token
+    auth_manager.get_access_token(request.args.get("code"))
+    return redirect(url_for('index'))
 
+@app.route('/logout')
+def logout():
+    # Remove the CACHE file so that a new user can authorize.
+    try:
+        os.remove(session_cache_path())
+    except OSError as e:
+        print(f"Error: {e.filename} - {e.strerror}.")
+    session.clear()
+    return redirect('/')
 
 def export_playlists(spotify):
     # Fetch user playlists
@@ -69,39 +89,19 @@ def export_playlists(spotify):
             results = spotify.playlist_tracks(playlist['id'])
             tracks = results['items']
             while results['next']:
-                results = sp.next(results)
+                results = spotify.next(results)
                 tracks.extend(results['items'])
             
             # Format playlist data
             playlist_data = {
                 'name': playlist['name'],
-                'tracks': []
+                'tracks': [f"{track['track']['name']} by {', '.join([artist['name'] for artist in track['track']['artists']])}" for track in tracks]
             }
-
-            for item in tracks:
-                track = item['track']
-                playlist_data['tracks'].append(f"{track['name']} by {', '.join([artist['name'] for artist in track['artists']])}")
 
             data.append(playlist_data)
 
-    # Here you would typically return a rendered template with the data
-    # For simplicity, we just return the data as a string
-    return str(data)  # You would normally render a template here
-
-@app.route('/callback')
-def callback():
-    # Step 6. Being redirected from Spotify auth page with the code
-    return redirect(url_for('index'))
-
-@app.route('/logout')
-def logout():
-    # Remove the CACHE file (.cache-{username}) so that a new user can authorize.
-    try:
-        os.remove(session_cache_path())
-    except OSError as e:
-        print ("Error: %s - %s." % (e.filename, e.strerror))
-    session.clear()
-    return redirect('/')
+    # You would typically render a template here
+    return render_template('playlists.html', playlists=data)
 
 if __name__ == '__main__':
     app.run(debug=True)
