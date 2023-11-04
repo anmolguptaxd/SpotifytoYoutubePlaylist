@@ -2,36 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Playlists</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Playlists</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .playlist {
+            margin-bottom: 40px;
+        }
+        .playlist-header {
+            background-color: #f3f3f3;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .track {
+            padding: 5px;
+            border-bottom: 1px solid #e1e1e1;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Your Spotify Playlists</h1>
-        <!-- Loop through each playlist and display its tracks -->
-        {% for playlist in playlists %}
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h3>{{ playlist.name }}</h3>
+    <h1>Your Playlists</h1>
+    
+    {% if playlists %}
+        <div id="playlists">
+            {% for playlist in playlists %}
+                <div class="playlist">
+                    <div class="playlist-header">
+                        <h2>{{ playlist.name }}</h2>
+                        <p>{{ playlist.description }}</p>
+                    </div>
+                    {% if playlist.tracks %}
+                        <div class="tracks">
+                            {% for track in playlist.tracks %}
+                                <div class="track">
+                                    <p><strong>{{ track.name }}</strong> by {{ track.artist }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No tracks found in this playlist.</p>
+                    {% endif %}
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        {% for track in playlist.tracks %}
-                            <li class="list-group-item">{{ track }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% else %}
-            <p class="text-center">No playlists found.</p>
-        {% endfor %}
-    </div>
-
-    <!-- Include Bootstrap JS and its dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No playlists found.</p>
+    {% endif %}
+    
 </body>
 </html>

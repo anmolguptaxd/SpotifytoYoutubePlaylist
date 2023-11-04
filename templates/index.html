@@ -2,16 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spotify Playlist Exporter</title>
 </head>
 <body>
-    <h1>Welcome to the Spotify Playlist Exporter</h1>
-    {% if not logged_in %}
-        <a href="{{ auth_url }}">Sign in with Spotify</a>
-    {% else %}
-        <h2>Your Playlists</h2>
-        <!-- Code to iterate over playlists and display them -->
-        <a href="{{ url_for('logout') }}">Log out</a>
-    {% endif %}
+    <h1>Welcome to Spotify Playlist Exporter</h1>
+    <p>Please <a href="{{ auth_url }}">sign in with Spotify</a> to export your playlists to YouTube.</p>
 </body>
 </html>
