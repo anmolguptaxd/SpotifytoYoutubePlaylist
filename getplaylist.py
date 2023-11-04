@@ -3,6 +3,11 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
 import uuid
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.file import Storage
+from oauth2client.tools import run_flow
 
 app = Flask(__name__)
 
@@ -99,9 +104,77 @@ def export_playlists(spotify):
             }
 
             data.append(playlist_data)
+            
+# Within export_playlists() after fetching Spotify playlists
+    youtube = get_youtube_client()
+    for playlist_data in data:
+        yt_playlist_id = create_youtube_playlist(youtube, playlist_data['name'], 'Imported from Spotify')
+        for track in playlist_data['tracks']:
+             track_name, track_artists = track.split(" by ")
+             add_track_to_youtube_playlist(youtube, yt_playlist_id, track_name, track_artists)
 
     # You would typically render a template here
     return render_template('playlists.html', playlists=data)
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+YOUTUBE_CLIENT_SECRETS_FILE = "14lbiv5trssmjsj05gnjfdo6mvmitlta.apps.googleusercontent.com.json"
+YOUTUBE_SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"]
+def get_youtube_client():
+    flow = flow_from_clientsecrets(YOUTUBE_CLIENT_SECRETS_FILE, scope=YOUTUBE_SCOPES)
+    storage = Storage("%s-oauth2.json" % sys.argv[0])
+    credentials = storage.get()
+
+    if credentials is None or credentials.invalid:
+        flags = argparser.parse_args()
+        credentials = run_flow(flow, storage, flags)
+
+    return build("youtube", "v3", credentials=credentials)
+
+def create_youtube_playlist(youtube, title, description):
+    playlists_insert_response = youtube.playlists().insert(
+        part="snippet,status",
+        body=dict(
+            snippet=dict(
+                title=title,
+                description=description
+            ),
+            status=dict(
+                privacyStatus="private"
+            )
+        )
+    ).execute()
+
+    return playlists_insert_response["id"]
+
+def add_track_to_youtube_playlist(youtube, playlist_id, track_name, track_artists):
+    # Search for the track on YouTube
+    search_response = youtube.search().list(
+        q=f"{track_name} {track_artists}",
+        part="id,snippet",
+        maxResults=1,
+        type="video"
+    ).execute()
+
+    videos = search_response.get("items", [])
+    if not videos:
+        print(f"No video found for {track_name} by {track_artists}.")
+        return
+
+    # Add the first search result to the playlist
+    video_id = videos[0]["id"]["videoId"]
+    add_video_request = youtube.playlistItems().insert(
+        part="snippet",
+        body={
+            "snippet": {
+                "playlistId": playlist_id,
+                "resourceId": {
+                    "kind": "youtube#video",
+                    "videoId": video_id
+                }
+            }
+        }
+    ).execute()
+
