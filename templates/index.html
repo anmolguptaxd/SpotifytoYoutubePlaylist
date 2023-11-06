@@ -4,9 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spotify Playlist Exporter</title>
+    <!-- Bootstrap CSS CDN -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3p0R4J21tz9n1jeaV0x12P5/*snip*/"
+      crossorigin="anonymous"
+    >
+    <style>
+        body {
+            padding-top: 5rem;
+        }
+        .container {
+            max-width: 600px;
+        }
+        .auth-link {
+            text-decoration: none;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Spotify Playlist Exporter</h1>
-    <p>Please <a href="{{ auth_url }}">sign in with Spotify</a> to export your playlists to YouTube.</p>
+    <div class="container text-center">
+        <h1 class="mb-4">Spotify Playlist Exporter</h1>
+        <p class="lead mb-4">Seamlessly transfer your favorite Spotify playlists to YouTube with a single click. Connect your Spotify account, pick your playlists, and let our app do the rest.</p>
+        <a class="btn btn-primary btn-lg" href="{{ auth_url }}" role="button">Sign in with Spotify</a>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-Df/*snip*/" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-L2/*snip*/" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSd/*snip*/" crossorigin="anonymous"></script>
 </body>
 </html>

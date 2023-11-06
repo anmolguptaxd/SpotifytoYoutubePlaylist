@@ -204,7 +204,7 @@ def show_playlists():
                 ).execute()
 
     # Return the list of Spotify playlists and a success message for YouTube operation
-    return render_template('playlists.html', playlists=spotify_playlists['items'], message="Playlists created on YouTube.")
+    return render_template('export_complete.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
