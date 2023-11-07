@@ -11,8 +11,19 @@ import os
 from google.oauth2.credentials import Credentials
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+
 
 app = Flask(__name__)
+
+SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
+SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
+YOUTUBE_CLIENT_SECRET = os.getenv('YOUTUBE_CLIENT_SECRET')
+YOUTUBE_CLIENT_ID = os.getenv('YOUTUBE_CLIENT_ID')
 
 # Configure your Spotify and YouTube credentials
 
@@ -62,8 +73,8 @@ def index():
     # Spotify OAuth2 flow
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
     auth_manager = SpotifyOAuth(
-        client_id=SPOTIFY_CLIENT_ID,
-        client_secret=SPOTIFY_CLIENT_SECRET,
+        client_id=SPOTIPY_CLIENT_ID,
+        client_secret=SPOTIPY_CLIENT_SECRET,
         redirect_uri=SPOTIFY_REDIRECT_URI,
         scope=SPOTIFY_SCOPE,
         cache_handler=cache_handler,
@@ -86,8 +97,8 @@ def index():
 def callback():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
     auth_manager = SpotifyOAuth(
-        client_id=SPOTIFY_CLIENT_ID,
-        client_secret=SPOTIFY_CLIENT_SECRET,
+        client_id=SPOTIPY_CLIENT_ID,
+        client_secret=SPOTIPY_CLIENT_SECRET,
         redirect_uri=SPOTIFY_REDIRECT_URI,
         scope=SPOTIFY_SCOPE,
         cache_handler=cache_handler,
