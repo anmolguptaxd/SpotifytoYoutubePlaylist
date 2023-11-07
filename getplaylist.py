@@ -15,8 +15,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app = Flask(__name__)
 
 # Configure your Spotify and YouTube credentials
-SPOTIFY_CLIENT_ID = '3ccee5fed52f4719957a790531670859'
-SPOTIFY_CLIENT_SECRET = '849030335b9b4f89b1f61820e6d1aaf5'
+
 SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5000/callback'
 YOUTUBE_CLIENT_SECRETS_FILE = "client-secret.json"
 YOUTUBE_SCOPES = ['https://www.googleapis.com/auth/youtube']
