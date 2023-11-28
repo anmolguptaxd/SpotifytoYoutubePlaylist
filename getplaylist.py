@@ -122,7 +122,7 @@ def login_youtube():
     )
     return redirect(authorization_url)
 
-YOUTUBE_REDIRECT_URI = 'https://spotifyto-youtube-playlist.vercel.app/youtube_callback'
+YOUTUBE_REDIRECT_URI = 'https://spotifyto-youtube-playlist-cb1keirsb-anmolguptaxds-projects.vercel.app/youtube_callback'
 @app.route('/youtube_callback')
 def youtube_callback():
     # State validation should be implemented here
