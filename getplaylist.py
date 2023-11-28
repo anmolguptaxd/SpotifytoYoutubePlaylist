@@ -27,7 +27,7 @@ YOUTUBE_CLIENT_ID = os.getenv('YOUTUBE_CLIENT_ID')
 
 # Configure your Spotify and YouTube credentials
 
-SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5000/callback'
+SPOTIPY_REDIRECT_URI = 'https://spotifyto-youtube-playlist.vercel.app/callback'
 YOUTUBE_CLIENT_SECRETS_FILE = "client-secret.json"
 YOUTUBE_SCOPES = ['https://www.googleapis.com/auth/youtube']
 
@@ -75,7 +75,7 @@ def index():
     auth_manager = SpotifyOAuth(
         client_id=SPOTIPY_CLIENT_ID,
         client_secret=SPOTIPY_CLIENT_SECRET,
-        redirect_uri=SPOTIFY_REDIRECT_URI,
+        redirect_uri=SPOTIPY_REDIRECT_URI,
         scope=SPOTIFY_SCOPE,
         cache_handler=cache_handler,
         show_dialog=True
@@ -99,7 +99,7 @@ def callback():
     auth_manager = SpotifyOAuth(
         client_id=SPOTIPY_CLIENT_ID,
         client_secret=SPOTIPY_CLIENT_SECRET,
-        redirect_uri=SPOTIFY_REDIRECT_URI,
+        redirect_uri=SPOTIPY_REDIRECT_URI,
         scope=SPOTIFY_SCOPE,
         cache_handler=cache_handler,
         show_dialog=True
@@ -122,7 +122,7 @@ def login_youtube():
     )
     return redirect(authorization_url)
 
-YOUTUBE_REDIRECT_URI = 'http://127.0.0.1:5000/youtube_callback'
+YOUTUBE_REDIRECT_URI = 'https://spotifyto-youtube-playlist.vercel.app/youtube_callback'
 @app.route('/youtube_callback')
 def youtube_callback():
     # State validation should be implemented here
