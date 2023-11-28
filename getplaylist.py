@@ -27,7 +27,7 @@ YOUTUBE_CLIENT_ID = os.getenv('YOUTUBE_CLIENT_ID')
 
 # Configure your Spotify and YouTube credentials
 
-SPOTIPY_REDIRECT_URI = 'https://spotifyto-youtube-playlist.vercel.app/callback'
+SPOTIPY_REDIRECT_URI = 'https://spotifyto-youtube-playlist-cb1keirsb-anmolguptaxds-projects.vercel.app/callback'
 YOUTUBE_CLIENT_SECRETS_FILE = "client-secret.json"
 YOUTUBE_SCOPES = ['https://www.googleapis.com/auth/youtube']
 
